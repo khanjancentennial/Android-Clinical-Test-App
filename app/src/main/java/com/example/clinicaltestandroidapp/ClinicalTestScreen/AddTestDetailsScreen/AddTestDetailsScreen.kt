@@ -1,6 +1,8 @@
 package com.example.clinicaltestandroidapp.ClinicalTestScreen.AddTestDetailsScreen
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,14 +40,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.example.clinicaltestandroidapp.ClinicalTestScreen.AddTestDetailsScreen.AddTestDetailsViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddTestDetailsScreen(navController: NavController) {
+fun AddTestDetailsScreen(navController: NavController,
+                         patientIdReceived : String?,
+                         fNameReceived : String?,
+                         lNameReceived : String?) {
     // Get the application context
     val context = LocalContext.current
     // Get SharedPreferences from the context
@@ -55,25 +62,33 @@ fun AddTestDetailsScreen(navController: NavController) {
 
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    var fName by remember { mutableStateOf("") }
-    var lName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var height by remember { mutableStateOf("") }
-    var weight by remember { mutableStateOf("") }
+    var patientId by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var bloodPressure by remember { mutableStateOf("") }
+    var respiratoryRate by remember { mutableStateOf("") }
+    var bloodOxygenLevel by remember { mutableStateOf("") }
+    var heartbeatRate by remember { mutableStateOf("") }
+    var chiefComplaint by remember { mutableStateOf("") }
+    var pastMedicalHistory by remember { mutableStateOf("") }
+    var medicalDiagnosis by remember { mutableStateOf("") }
+    var medicalPrescription by remember { mutableStateOf("") }
 
     val isLoading by viewModel.isLoading.collectAsState()
-    val addpatientSuccess by viewModel.addPatientSuccess.collectAsState()
+    val addPatientSuccess by viewModel.addPatientSuccess.collectAsState()
     val showToast by viewModel.showToast.collectAsState()
-    var gender by remember { mutableStateOf("Male") }
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(Unit) {
+        patientId = patientIdReceived.toString()
+        firstName = fNameReceived.toString()
+        lastName = lNameReceived.toString()
+    }
 
-    LaunchedEffect(addpatientSuccess) {
-        if (addpatientSuccess) {
-            navController.navigate("HomeScreen"){
-                popUpTo(navController.graph.startDestinationId) {
+    LaunchedEffect(addPatientSuccess) {
+        if (addPatientSuccess) {
+            navController.navigate("clinicalTestsDetailsScreen/${patientId}/${firstName}/${lastName}"){
+                popUpTo(navController.previousBackStackEntry?.destination?.id ?: navController.graph.startDestinationId) {
                     inclusive = true
                 }
             } // Navigate to HomeScreen
@@ -104,7 +119,7 @@ fun AddTestDetailsScreen(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Add Patient!", fontSize = 32.sp, color = Color.Black)
+            Text("Add Test Details!", fontSize = 32.sp, color = Color.Black)
         }
 
 
@@ -115,20 +130,21 @@ fun AddTestDetailsScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
                 .height(50.dp),
-            value = fName,
-            onValueChange = {fName = it},
+            value = bloodPressure,
+            onValueChange = {bloodPressure = it},
             placeholder = {
                 Text(
-                    text = "First Name",
+                    text = "Blood Pressure",
                     fontSize = 14.sp,
                     modifier = Modifier
                 ) },
             shape = RoundedCornerShape(5.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
             )
 
-        if (fName.isNullOrEmpty()) {
-            Text(text = "Please Enter First Name", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        if (bloodPressure.isEmpty()) {
+            Text(text = "Please Enter Blood Pressure", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
         }else{
 
         }
@@ -137,57 +153,11 @@ fun AddTestDetailsScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
                 .height(50.dp),
-            value = lName,
-            onValueChange = {lName = it},
+            value = respiratoryRate,
+            onValueChange = {respiratoryRate = it},
             placeholder = {
                 Text(
-                    text = "Last Name",
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                ) },
-            shape = RoundedCornerShape(5.dp),
-
-            )
-
-        if (lName.isNullOrEmpty()) {
-            Text(text = "Please Enter Last Name", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
-        }else{
-
-        }
-
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp)
-                .height(50.dp),
-            value = email,
-            onValueChange = {email = it},
-            placeholder = {
-                Text(
-                    text = "Email",
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                ) },
-            shape = RoundedCornerShape(5.dp),
-
-            )
-
-        if (email.isNullOrEmpty()) {
-            Text(text = "Please Enter Email Id", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
-        }else{
-
-        }
-
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp)
-                .height(50.dp),
-            value = phoneNumber,
-            onValueChange = {phoneNumber = it},
-            placeholder = {
-                Text(
-                    text = "phone Number",
+                    text = "Respiratory Rate",
                     fontSize = 14.sp,
                     modifier = Modifier
                 ) },
@@ -196,8 +166,8 @@ fun AddTestDetailsScreen(navController: NavController) {
 
         )
 
-        if (phoneNumber.isNullOrEmpty()) {
-            Text(text = "Please Enter Phone Number", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        if (respiratoryRate.isEmpty()) {
+            Text(text = "Please Enter Respiratory Rate", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
         }else{
 
         }
@@ -207,13 +177,59 @@ fun AddTestDetailsScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
                 .height(50.dp),
-            value = address,
+            value = bloodOxygenLevel,
+            onValueChange = {bloodOxygenLevel = it},
+            placeholder = {
+                Text(
+                    text = "Blood Oxygen Level",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                ) },
+            shape = RoundedCornerShape(5.dp),
+
+            )
+
+        if (bloodOxygenLevel.isNullOrEmpty()) {
+            Text(text = "Please Enter Blood Oxygen Level", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        }else{
+
+        }
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .height(50.dp),
+            value = heartbeatRate,
+            onValueChange = {heartbeatRate = it},
+            placeholder = {
+                Text(
+                    text = "Heart Beat Rate",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                ) },
+            shape = RoundedCornerShape(5.dp),
+
+            )
+
+        if (heartbeatRate.isNullOrEmpty()) {
+            Text(text = "Please Enter Heart Beat Rate", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        }else{
+
+        }
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .height(50.dp),
+            value = chiefComplaint,
             maxLines = 3,
             minLines = 3,
-            onValueChange = {address = it},
+            onValueChange = {chiefComplaint = it},
             placeholder = {
                 Text(
-                    text = "Address",
+                    text = "Chief Complaint",
                     fontSize = 14.sp,
                     modifier = Modifier
                 ) },
@@ -221,8 +237,34 @@ fun AddTestDetailsScreen(navController: NavController) {
 
             )
 
-        if (address.isNullOrEmpty()) {
-            Text(text = "Please Enter Address", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        if (chiefComplaint.isNullOrEmpty()) {
+            Text(text = "Please Enter Chief Complaint", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        }else{
+
+        }
+
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .height(50.dp),
+            value = pastMedicalHistory,
+            maxLines = 3,
+            minLines = 3,
+            onValueChange = {pastMedicalHistory = it},
+            placeholder = {
+                Text(
+                    text = "Past Medical History",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                ) },
+            shape = RoundedCornerShape(5.dp),
+
+            )
+
+        if (pastMedicalHistory.isNullOrEmpty()) {
+            Text(text = "Please Enter Past Medical History", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
         }else{
 
         }
@@ -232,20 +274,24 @@ fun AddTestDetailsScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
                 .height(50.dp),
-            value = weight,
-            onValueChange = { weight = it},
+            value = medicalDiagnosis,
+            maxLines = 3,
+            minLines = 3,
+            onValueChange = {medicalDiagnosis = it},
             placeholder = {
                 Text(
-                    text = "Weight",
+                    text = "Medical Diagnosis",
                     fontSize = 14.sp,
                     modifier = Modifier
                 ) },
             shape = RoundedCornerShape(5.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
 
-        if (weight.isNullOrEmpty()) {
-            Text(text = "Please Enter weight", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+            )
+
+        if (medicalDiagnosis.isNullOrEmpty()) {
+            Text(text = "Please Enter Medical Diagnosis", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        }else{
+
         }
 
         OutlinedTextField(
@@ -253,45 +299,26 @@ fun AddTestDetailsScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(vertical = 10.dp)
                 .height(50.dp),
-            value = height,
-            onValueChange = { height = it},
+            value = medicalPrescription,
+            maxLines = 3,
+            minLines = 3,
+            onValueChange = {medicalPrescription = it},
             placeholder = {
                 Text(
-                    text = "height",
+                    text = "Medical Prescription",
                     fontSize = 14.sp,
                     modifier = Modifier
                 ) },
             shape = RoundedCornerShape(5.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
 
-        if (weight.isNullOrEmpty()) {
-            Text(text = "Please Enter Height", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+            )
+
+        if (medicalPrescription.isNullOrEmpty()) {
+            Text(text = "Please Enter Medical Prescription", color = Color.Red, fontSize = 12.sp) // Explicitly use `text =`
+        }else{
+
         }
 
-
-        Spacer(modifier = Modifier.height(20.dp))
-        Text("Gender", fontSize = 16.sp, color = Color.Black)
-        Row {
-            listOf("Male", "Female").forEach { genderOption ->
-                Row(
-                    modifier = Modifier
-                        .selectable(
-                            selected = (gender == genderOption),
-                            onClick = { gender = genderOption },
-                            role = Role.RadioButton
-                        )
-                        .padding(end = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = (gender == genderOption),
-                        onClick = { gender = genderOption }
-                    )
-                    Text(text = genderOption, fontSize = 14.sp)
-                }
-            }
-        }
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -302,20 +329,21 @@ fun AddTestDetailsScreen(navController: NavController) {
                 onClick = {
                     viewModel.addPatient(
                         context,
-                        email,
-                        fName,
-                        lName,
-                        phoneNumber,
-                        address,
-                        gender,
-                        height,
-                        weight
+                        bloodOxygenLevel.toInt(),
+                        bloodPressure.toInt(),
+                        respiratoryRate.toInt(),
+                        heartbeatRate.toInt(),
+                        chiefComplaint,
+                        pastMedicalHistory,
+                        medicalDiagnosis,
+                        medicalPrescription,
+                        patientId
                     ) // Call login function
                     keyboardController?.hide() // Hide the keyboard
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Register Patient", color = Color.White)
+                Text("Add Test Details", color = Color.White)
             }
         }
 
@@ -328,7 +356,7 @@ fun AddTestDetailsScreen(navController: NavController) {
             LaunchedEffect(Unit) {
                 Toast.makeText(
                     context,
-                    if (addpatientSuccess) "Patient add successful!" else "Please check Details!",
+                    if (addPatientSuccess) "Patient add successful!" else "Please check Details!",
                     Toast.LENGTH_SHORT
                 ).show()
                 viewModel.dismissToast() // Dismiss the toast after showing

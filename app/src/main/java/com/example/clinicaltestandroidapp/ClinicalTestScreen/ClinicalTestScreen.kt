@@ -83,7 +83,7 @@ fun ClinicalTestScreen(navController: NavController,
                     logoutTriggered = true
 //                    }
                 },
-                onAddPatientClick = { navController.navigate("addTestDetailsScreen") },
+                onAddPatientClick = { navController.navigate("addTestDetailsScreen/${patientId}/${firstName}/${lastName}") },
                 navController = navController
             )
 
@@ -99,7 +99,7 @@ fun ClinicalTestScreen(navController: NavController,
                     onEditClick = { patient ->
                         selectedPatient = patient
                         isEditActive = true
-//                        navController.navigate("editClinicalTestScreen/${patient.id}/${patient.firstName}/${patient.lastName}/${patient.phoneNumber}/${patient.email}/${patient.height}/${patient.weight}/${patient.address}/${if (patient.gender == 0) "0" else "1"}")
+                        navController.navigate("editClinicalTestScreen/${patientId}/${firstName}/${lastName}/${patient.bloodPressure}/${patient.respiratoryRate}/${patient.heartbeatRate}/${patient.bloodOxygenLevel}/${patient.chiefComplaint}/${patient.pastMedicalHistory}/${patient.medicalDiagnosis}/${patient.medicalPrescription}/${patient._id}")
                     },
                     onDeleteClick = { patient ->
                         selectedPatient = patient
@@ -216,9 +216,9 @@ fun PatientRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Blood Pressure ${patient.creationDateTime}", fontSize = 18.sp)
-                    Text("Blood Pressure ${patient.bloodPressure}")
-                    Text("Blood Oxygen Level : ${patient.bloodOxygenLevel}")
+                    Text("${patient.creationDateTime}", fontSize = 18.sp)
+                    Text("Blood Pressure: ${patient.bloodPressure}")
+                    Text("Blood Oxygen Level: ${patient.bloodOxygenLevel}")
                     Text("Respiratory Rate: ${patient.respiratoryRate}")
                     Text("Heart beat Rate: ${patient.heartbeatRate}")
                     Text(

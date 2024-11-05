@@ -1,6 +1,8 @@
 package com.example.clinicaltestandroidapp.ClinicalTestScreen.AddTestDetailsScreen
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clinicaltestandroidapp.HomeScreen.AddPatientDetailsScreen.AddTestModel
@@ -14,6 +16,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.delay
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class AddTestDetailsViewModel() : ViewModel() {
 
@@ -49,34 +54,40 @@ class AddTestDetailsViewModel() : ViewModel() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addPatient(context: Context,
-                 email: String,
-                 firstName : String,
-                 lastName : String,
-                 phoneNumber : String,
-                 address : String,
-                 gender : String,
-                   height : String,
-                   weight : String
+                   bloodOxygenLevel: Int,
+                   bloodPressure : Int,
+                   respiratoryRate : Int,
+                   heartbeatRate : Int,
+                   chiefComplaint : String,
+                   pastMedicalHistory : String,
+                   medicalDiagnosis : String,
+                   medicalPrescription : String,
+                   patientId : String
     ) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            .withZone(ZoneOffset.UTC)
+        val currentDateTime = formatter.format(Instant.now())
         _isLoading.value = true
         val loginData = mapOf(
-            "firstName" to firstName.toString(),
-            "lastName" to lastName.toString(),
-            "phoneNumber" to phoneNumber.toString(),
-            "email" to email.toString(),
-            "address" to address.toString(),
-            "gender" to if (gender == "Male") "0" else "1",
-            "status" to "normal",
-            "height" to height,
-            "weight" to weight,
+            "bloodPressure" to bloodPressure,
+            "respiratoryRate" to respiratoryRate,
+            "heartbeatRate" to heartbeatRate,
+            "bloodOxygenLevel" to bloodOxygenLevel,
+            "chiefComplaint" to chiefComplaint.toString(),
+            "pastMedicalHistory" to pastMedicalHistory.toString(),
+            "medicalDiagnosis" to medicalDiagnosis.toString(),
+            "medicalPrescription" to medicalPrescription,
+            "patientId" to patientId,
+            "creationDateTime" to currentDateTime
         )
 
         val json = Gson().toJson(loginData)
         val requestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
 
         val request = Request.Builder()
-            .url("https://group3-mapd713.onrender.com/patient/add")
+            .url("https://group3-mapd713.onrender.com/api/clinical-tests/clinical-tests")
             .post(requestBody)
             .build()
 

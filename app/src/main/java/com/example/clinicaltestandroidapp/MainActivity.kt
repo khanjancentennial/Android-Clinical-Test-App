@@ -1,8 +1,10 @@
 package com.example.clinicaltestandroidapp;
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -17,12 +19,14 @@ import com.example.clinicaltestandroidapp.ClinicalTestScreen.AddTestDetailsScree
 import com.example.clinicaltestandroidapp.ClinicalTestScreen.ClinicalTestScreen
 import com.example.clinicaltestandroidapp.HomeScreen.HomeScreen
 import com.example.clinicaltestandroidapp.ClinicalTestScreen.ClinicalTestScreen
+import com.example.clinicaltestandroidapp.ClinicalTestScreen.EditTestDetailsScreen.EditTestDetailsScreen
 import com.example.clinicaltestandroidapp.HomeScreen.AddPatientDetailsScreen
 import com.example.clinicaltestandroidapp.HomeScreen.EditPatientDetailsScreen.EditPatientDetailsScreen
 import com.example.clinicaltestandroidapp.LoginScreen.LoginScreen
 import com.example.clinicaltestandroidapp.RegistrationScreen.RegistrationScreen
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -33,6 +37,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainApp() {
     // Create a NavController
@@ -54,8 +59,25 @@ fun MainApp() {
             AddPatientDetailsScreen(navController = navController) // Your RegistrationScreen Composable
          }
 
-        composable("addTestDetailsScreen") {
-            AddTestDetailsScreen(navController = navController) // Your RegistrationScreen Composable
+        composable(
+            route = "addTestDetailsScreen/{patientId}/{firstName}/{lastName}",
+            arguments = listOf(
+                navArgument("patientId") { type = NavType.StringType },
+                navArgument("firstName") { type = NavType.StringType },
+                navArgument("lastName") { type = NavType.StringType }
+
+                )
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getString("patientId")
+            val firstName = backStackEntry.arguments?.getString("firstName")
+            val lastName = backStackEntry.arguments?.getString("lastName")
+
+            AddTestDetailsScreen(
+                navController = navController,
+                patientIdReceived = patientId,
+                fNameReceived = firstName,
+                lNameReceived = patientId
+            )
         }
 //        composable("editPatientDetailsScreen") {
 //            EditPatientDetailsScreen(navController = navController) // Your RegistrationScreen Composable
@@ -119,8 +141,57 @@ fun MainApp() {
                 lNameReceived = lastName
             )
         }
+
+        composable(
+            route = "editClinicalTestScreen/{patientId}/{firstName}/{lastName}/{bloodPressure}/{respiratoryRate}/{heartbeatRate}/{bloodOxygenLevel}/{chiefComplaint}/{pastMedicalHistory}/{medicalDiagnosis}/{medicalPrescription}/{testId}",
+            arguments = listOf(
+                navArgument("patientId") { type = NavType.StringType },
+                navArgument("firstName") { type = NavType.StringType },
+                navArgument("lastName") { type = NavType.StringType },
+                navArgument("bloodPressure") { type = NavType.StringType },
+                navArgument("respiratoryRate") { type = NavType.StringType },
+                navArgument("heartbeatRate") { type = NavType.StringType },
+                navArgument("bloodOxygenLevel") { type = NavType.StringType },
+                navArgument("chiefComplaint") { type = NavType.StringType },
+                navArgument("pastMedicalHistory") { type = NavType.StringType },
+                navArgument("medicalDiagnosis") { type = NavType.StringType },
+                navArgument("medicalPrescription") { type = NavType.StringType },
+                navArgument("testId") { type = NavType.StringType },
+
+            )
+        ) { backStackEntry ->
+            val patientId = backStackEntry.arguments?.getString("patientId")
+            val firstName = backStackEntry.arguments?.getString("firstName")
+            val lastName = backStackEntry.arguments?.getString("lastName")
+            val bloodPressure = backStackEntry.arguments?.getString("bloodPressure")
+            val respiratoryRate = backStackEntry.arguments?.getString("respiratoryRate")
+            val heartbeatRate = backStackEntry.arguments?.getString("heartbeatRate")
+            val bloodOxygenLevel = backStackEntry.arguments?.getString("bloodOxygenLevel")
+            val chiefComplaint = backStackEntry.arguments?.getString("chiefComplaint")
+            val pastMedicalHistory = backStackEntry.arguments?.getString("pastMedicalHistory")
+            val medicalDiagnosis = backStackEntry.arguments?.getString("medicalDiagnosis")
+            val medicalPrescription = backStackEntry.arguments?.getString("medicalPrescription")
+            val testId = backStackEntry.arguments?.getString("testId")
+            EditTestDetailsScreen(
+                navController = navController,
+                patientIdReceived = patientId,
+                fNameReceived = firstName,
+                lNameReceived = lastName,
+                bloodPressureReceived = bloodPressure,
+                respiratoryRateReceived = respiratoryRate,
+                heartbeatRateReceived = heartbeatRate,
+                bloodOxygenLevelReceived = bloodOxygenLevel,
+                chiefComplaintReceived = chiefComplaint,
+                pastMedicalHistoryReceived = pastMedicalHistory,
+                medicalDiagnosisReceived = medicalDiagnosis,
+                medicalPrescriptionReceived = medicalPrescription,
+                testIdReceived = testId,
+            )
+        }
     }
 }
+
+
 
 // Define your AppTheme using Material 3
 @Composable
